@@ -1,4 +1,5 @@
 import 'package:colortouch/painter.dart';
+import 'package:colortouch/stroke-with.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
@@ -67,30 +68,54 @@ class _MyHomePageState extends State<MyHomePage> {
   void _pickColor() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Pick a color'),
-        content: SingleChildScrollView(
-          child: ColorPicker(
-            pickerColor: drawColor,
-            onColorChanged: (color) {
-              setState(() => drawColor = color);
-            },
+      builder:
+          (_) => AlertDialog(
+            title: Text('Pick a color'),
+            content: SingleChildScrollView(
+              child: ColorPicker(
+                pickerColor: drawColor,
+                onColorChanged: (color) {
+                  setState(() => drawColor = color);
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            child: Text('Close'),
-            onPressed: () => Navigator.of(context).pop(),
-          )
-        ],
-      ),
     );
   }
 
   void _changeSymmetry() {
-    setState(() {
-      symmetry = (symmetry == 12) ? 2 : symmetry + 2;
-    });
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text('Pick a Width'),
+            content: SingleChildScrollView(
+              child: StrokeWith(
+                width: strokeWidth,
+                update: (width) {
+                  setState(() {
+                    strokeWidth = width;
+                  });
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+    );
+    // setState(() {
+    //   symmetry = (symmetry == 12) ? 2 : symmetry + 2;
+    // });
   }
 
   void _changeStrokeWidth(double newWidth) {
@@ -110,7 +135,12 @@ class _MyHomePageState extends State<MyHomePage> {
             onPanUpdate: _onPanUpdate,
             onPanEnd: _onPanEnd,
             child: CustomPaint(
-              painter: SymmetryPainter(lines + [currentLine], symmetry, drawColor, strokeWidth),
+              painter: SymmetryPainter(
+                lines + [currentLine],
+                symmetry,
+                drawColor,
+                strokeWidth,
+              ),
               size: Size.infinite,
             ),
           ),
@@ -152,31 +182,31 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
-        
-        // bottomNavigationBar: Container(
-        //   color: Colors.grey[900],
-        //   padding: EdgeInsets.symmetric(horizontal: 12),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       IconButton(icon: Icon(Icons.color_lens, color: drawColor), onPressed: _pickColor),
-        //       IconButton(icon: Icon(Icons.grid_4x4, color: Colors.white), onPressed: _changeSymmetry),
-        //       IconButton(icon: Icon(Icons.refresh, color: Colors.red), onPressed: _clear),
-        //       Slider(
-        //         value: strokeWidth,
-        //         min: 1.0,
-        //         max: 10.0,
-        //         divisions: 9,
-        //         label: strokeWidth.toStringAsFixed(1),
-        //         onChanged: _changeStrokeWidth,
-        //         activeColor: drawColor,
-        //       ),
-        //     ],
-        //   ),
-        // )
+
+      // bottomNavigationBar: Container(
+      //   color: Colors.grey[900],
+      //   padding: EdgeInsets.symmetric(horizontal: 12),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       IconButton(icon: Icon(Icons.color_lens, color: drawColor), onPressed: _pickColor),
+      //       IconButton(icon: Icon(Icons.grid_4x4, color: Colors.white), onPressed: _changeSymmetry),
+      //       IconButton(icon: Icon(Icons.refresh, color: Colors.red), onPressed: _clear),
+      //       Slider(
+      //         value: strokeWidth,
+      //         min: 1.0,
+      //         max: 10.0,
+      //         divisions: 9,
+      //         label: strokeWidth.toStringAsFixed(1),
+      //         onChanged: _changeStrokeWidth,
+      //         activeColor: drawColor,
+      //       ),
+      //     ],
+      //   ),
+      // )
     );
   }
 }
