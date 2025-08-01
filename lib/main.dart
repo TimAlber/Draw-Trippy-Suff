@@ -228,15 +228,18 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 100,
               width: double.infinity,
               color: Colors.grey[900],
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.symmetric(horizontal: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.color_lens, color: Colors.white),
-                    onPressed: _pickColor,
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 25),
+                    child: IconButton(
+                      icon: Icon(Icons.color_lens, color: Colors.white),
+                      onPressed: _pickColor,
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.brush, color: Colors.white),
@@ -256,11 +259,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.save, color: Colors.white),
-                    onPressed: _saveCanvasImage,
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25),
+                    child: IconButton(
+                      icon: Icon(Icons.save, color: Colors.white),
+                      onPressed: _saveCanvasImage,
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                    ),
                   ),
                 ],
               ),
@@ -268,28 +274,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-
-      // bottomNavigationBar: Container(
-      //   color: Colors.grey[900],
-      //   padding: EdgeInsets.symmetric(horizontal: 12),
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [
-      //       IconButton(icon: Icon(Icons.color_lens, color: drawColor), onPressed: _pickColor),
-      //       IconButton(icon: Icon(Icons.grid_4x4, color: Colors.white), onPressed: _changeSymmetry),
-      //       IconButton(icon: Icon(Icons.refresh, color: Colors.red), onPressed: _clear),
-      //       Slider(
-      //         value: strokeWidth,
-      //         min: 1.0,
-      //         max: 10.0,
-      //         divisions: 9,
-      //         label: strokeWidth.toStringAsFixed(1),
-      //         onChanged: _changeStrokeWidth,
-      //         activeColor: drawColor,
-      //       ),
-      //     ],
-      //   ),
-      // )
     );
   }
 }
