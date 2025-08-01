@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class StrokeWith extends StatefulWidget {
-  const StrokeWith({super.key, required this.width, required this.update});
+class ChangePopup extends StatefulWidget {
+  const ChangePopup({super.key, required this.width, required this.update});
   final double width;
   final Function(double) update;
 
   @override
-  State<StrokeWith> createState() => _StrokeWithState();
+  State<ChangePopup> createState() => _ChangePopupState();
 }
 
-class _StrokeWithState extends State<StrokeWith> {
+class _ChangePopupState extends State<ChangePopup> {
   double tempStrokeWidth = 0;
 
   @override

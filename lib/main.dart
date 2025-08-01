@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
           (_) => AlertDialog(
             title: Text('Pick a Width'),
             content: SingleChildScrollView(
-              child: StrokeWith(
+              child: ChangePopup(
                 width: strokeWidth,
                 update: (width) {
                   setState(() {
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
           (_) => AlertDialog(
             title: Text('Pick a Symmetry'),
             content: SingleChildScrollView(
-              child: StrokeWith(
+              child: ChangePopup(
                 width: symmetry.toDouble(),
                 update: (newSymmetry) {
                   setState(() {
