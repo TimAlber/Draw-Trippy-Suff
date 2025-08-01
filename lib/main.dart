@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _changeSymmetry() {
+  void _changeWidth() {
     showDialog(
       context: context,
       builder:
@@ -113,15 +113,32 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
     );
-    // setState(() {
-    //   symmetry = (symmetry == 12) ? 2 : symmetry + 2;
-    // });
   }
 
-  void _changeStrokeWidth(double newWidth) {
-    setState(() {
-      strokeWidth = newWidth;
-    });
+  void _changeSymmetry() {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text('Pick a Symmetry'),
+            content: SingleChildScrollView(
+              child: StrokeWith(
+                width: symmetry.toDouble(),
+                update: (newSymmetry) {
+                  setState(() {
+                    symmetry = newSymmetry.toInt();
+                  });
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -162,20 +179,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     constraints: BoxConstraints(),
                   ),
                   IconButton(
+                    icon: Icon(Icons.brush, color: Colors.white),
+                    onPressed: _changeWidth,
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
+                  IconButton(
                     icon: Icon(Icons.grid_4x4, color: Colors.white),
-                    onPressed: _changeSymmetry,
+                    onPressed: () => _changeSymmetry(),
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                   ),
                   IconButton(
                     icon: Icon(Icons.refresh, color: Colors.red),
                     onPressed: _clear,
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.brush, color: Colors.white),
-                    onPressed: () => _changeStrokeWidth(5.0),
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                   ),
