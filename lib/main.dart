@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await WebImageDownloader.downloadImageFromUInt8List(
           uInt8List: pngBytes,
           name:
-              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
+              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}.png',
         );
       } else {
         final directory = await getApplicationDocumentsDirectory();
