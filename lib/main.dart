@@ -7,9 +7,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:image_downloader_web/image_downloader_web.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+import 'package:web/web.dart' as web;
 
 void main() {
   runApp(const MyApp());
@@ -153,32 +156,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _saveCanvasImage() async {
     try {
-      RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      RenderRepaintBoundary boundary =
+          _globalKey.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
       var image = await boundary.toImage(pixelRatio: 3.0);
       ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/drawing_${DateTime.now().millisecondsSinceEpoch}.png');
-      await file.writeAsBytes(pngBytes);
-      print('Saved to ${file.path}');
-
-
-      final params = ShareParams(
-        text: 'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
-        files: [XFile(file.path)],
-      );
-
-      final result = await SharePlus.instance.share(params);
-
-      if (result.status == ShareResultStatus.success) {
-        print('Thank you for sharing the picture!');
-      } else if (result.status == ShareResultStatus.dismissed) {
-        print('Sharing was dismissed');
+      if (kIsWeb) {
+        await WebImageDownloader.downloadImageFromUInt8List(
+          uInt8List: pngBytes,
+          name:
+              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
+        );
       } else {
-        print('Sharing went wrong');
-      }
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File(
+          '${directory.path}/drawing_${DateTime.now().millisecondsSinceEpoch}.png',
+        );
+        await file.writeAsBytes(pngBytes);
+        print('Saved to ${file.path}');
 
+        final params = ShareParams(
+          text:
+              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
+          files: [XFile(file.path)],
+        );
+
+        final result = await SharePlus.instance.share(params);
+
+        if (result.status == ShareResultStatus.success) {
+          print('Thank you for sharing the picture!');
+        } else if (result.status == ShareResultStatus.dismissed) {
+          print('Sharing was dismissed');
+        } else {
+          print('Sharing went wrong');
+        }
+      }
     } catch (e) {
       print('Error saving image: $e');
     }
