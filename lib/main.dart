@@ -1,7 +1,15 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:colortouch/painter.dart';
 import 'package:colortouch/stroke-with.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int symmetry = 15;
   Color drawColor = Colors.white;
   double strokeWidth = 5.0;
+
+  final GlobalKey _globalKey = GlobalKey();
 
   void _onPanStart(DragStartDetails details) {
     setState(() {
@@ -141,6 +151,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> _saveCanvasImage() async {
+    try {
+      RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      var image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/drawing_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(pngBytes);
+      print('Saved to ${file.path}');
+
+
+      final params = ShareParams(
+        text: 'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
+        files: [XFile(file.path)],
+      );
+
+      final result = await SharePlus.instance.share(params);
+
+      if (result.status == ShareResultStatus.success) {
+        print('Thank you for sharing the picture!');
+      } else if (result.status == ShareResultStatus.dismissed) {
+        print('Sharing was dismissed');
+      } else {
+        print('Sharing went wrong');
+      }
+
+    } catch (e) {
+      print('Error saving image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,14 +194,17 @@ class _MyHomePageState extends State<MyHomePage> {
             onPanStart: _onPanStart,
             onPanUpdate: _onPanUpdate,
             onPanEnd: _onPanEnd,
-            child: CustomPaint(
-              painter: SymmetryPainter(
-                lines + [currentLine],
-                symmetry,
-                drawColor,
-                strokeWidth,
+            child: RepaintBoundary(
+              key: _globalKey,
+              child: CustomPaint(
+                painter: SymmetryPainter(
+                  lines + [currentLine],
+                  symmetry,
+                  drawColor,
+                  strokeWidth,
+                ),
+                size: Size.infinite,
               ),
-              size: Size.infinite,
             ),
           ),
 
@@ -173,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.color_lens, color: drawColor),
+                    icon: Icon(Icons.color_lens, color: Colors.white),
                     onPressed: _pickColor,
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
@@ -191,8 +237,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     constraints: BoxConstraints(),
                   ),
                   IconButton(
-                    icon: Icon(Icons.refresh, color: Colors.red),
+                    icon: Icon(Icons.refresh, color: Colors.white),
                     onPressed: _clear,
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.save, color: Colors.white),
+                    onPressed: _saveCanvasImage,
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                   ),
