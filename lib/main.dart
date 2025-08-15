@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:colortouch/drawline.dart';
 import 'package:colortouch/painter.dart';
 import 'package:colortouch/stroke-with.dart';
 import 'package:flutter/foundation.dart';
@@ -11,8 +12,6 @@ import 'package:image_downloader_web/image_downloader_web.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-
-import 'package:web/web.dart' as web;
 
 void main() {
   runApp(const MyApp());
@@ -43,8 +42,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<List<Offset>> lines = [];
-  List<Offset> currentLine = [];
+  //List<Offset> currentLine = [];
+  List<DrawnLine> lines = [];
+  List<Offset> currentPoints = [];
 
   int symmetry = 15;
   Color drawColor = Colors.white;
@@ -54,27 +54,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onPanStart(DragStartDetails details) {
     setState(() {
-      currentLine = [details.localPosition];
+      currentPoints = [details.localPosition];
     });
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
-      currentLine.add(details.localPosition);
+      currentPoints.add(details.localPosition);
     });
   }
 
   void _onPanEnd(DragEndDetails details) {
     setState(() {
-      lines.add(currentLine);
-      currentLine = [];
+      lines.add(DrawnLine(
+        points: List.from(currentPoints),
+        color: drawColor,
+        strokeWidth: strokeWidth,
+      ));
+      currentPoints.clear();
     });
   }
 
   void _clear() {
     setState(() {
       lines.clear();
-      currentLine.clear();
+      currentPoints.clear();
     });
   }
 
@@ -212,7 +216,8 @@ class _MyHomePageState extends State<MyHomePage> {
               key: _globalKey,
               child: CustomPaint(
                 painter: SymmetryPainter(
-                  lines + [currentLine],
+                  lines,
+                  currentPoints,
                   symmetry,
                   drawColor,
                   strokeWidth,
