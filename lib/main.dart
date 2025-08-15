@@ -42,7 +42,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //List<Offset> currentLine = [];
   List<DrawnLine> lines = [];
   List<Offset> currentPoints = [];
 
