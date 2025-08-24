@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'dart:ui';
 
 import 'package:colortouch/drawline.dart';
@@ -8,10 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:image_downloader_web/image_downloader_web.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+
+import 'imagesaver/image_saver_stub.dart'
+  if (dart.library.html) 'imagesaver/image_saver_web.dart'
+  if (dart.library.io) 'imagesaver/image_saver_io.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -166,36 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      if (kIsWeb) {
-        await WebImageDownloader.downloadImageFromUInt8List(
-          uInt8List: pngBytes,
-          name:
-              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}.png',
-        );
-      } else {
-        final directory = await getApplicationDocumentsDirectory();
-        final file = File(
-          '${directory.path}/drawing_${DateTime.now().millisecondsSinceEpoch}.png',
-        );
-        await file.writeAsBytes(pngBytes);
-        print('Saved to ${file.path}');
-
-        final params = ShareParams(
-          text:
-              'Trippy Image from ${DateFormat('dd.MM.yyyy kk:mm').format(DateTime.now())}',
-          files: [XFile(file.path)],
-        );
-
-        final result = await SharePlus.instance.share(params);
-
-        if (result.status == ShareResultStatus.success) {
-          print('Thank you for sharing the picture!');
-        } else if (result.status == ShareResultStatus.dismissed) {
-          print('Sharing was dismissed');
-        } else {
-          print('Sharing went wrong');
-        }
-      }
+      await saveImage(pngBytes);
     } catch (e) {
       print('Error saving image: $e');
     }
